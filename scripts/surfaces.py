@@ -83,9 +83,16 @@ class Xfce(Backend):
         return [ln.split()[0] for ln in out.splitlines() if " connected" in ln]
 
     def set_desktop(self, path: str, dry: bool) -> str:
+        monitors = self._monitors()
+        if not monitors:
+            # Backdrop keys are named after the output, so without the real
+            # names there is nothing useful to write -- guessing one writes a
+            # key xfdesktop will never read, which looks like success and is not.
+            print("    ! could not enumerate monitors (is xrandr installed?)")
+            return NEEDS_SETUP
         run(["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/single-workspace-mode",
              "-n", "-t", "bool", "-s", "true"], dry)
-        for mon in self._monitors() or ["HDMI-0"]:
+        for mon in monitors:
             base = f"/backdrop/screen0/monitor{mon}/workspace0"
             run(["xfconf-query", "-c", "xfce4-desktop", "-p", f"{base}/last-image",
                  "-n", "-t", "string", "-s", path], dry)

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Peter
+Copyright (c) 2026 Peter Lacey-Bordeaux
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,25 @@ SOFTWARE.
 
 ---
 
-The paintings are not covered by this licence and do not need to be: the USDA
-Pomological Watercolor Collection is in the public domain. The National
-Agricultural Library asks that use carry the following credit, and this project
-prints it in its README and its own documentation:
+THE PAINTINGS
+
+The MIT licence above covers the code in this repository. It does not cover the
+paintings, and does not need to: works produced for the U.S. federal government
+by its employees are not subject to copyright in the United States (17 U.S.C.
+§ 105), and the National Agricultural Library publishes the USDA Pomological
+Watercolor Collection as public domain.
+
+Two files here contain reproductions of those paintings rather than code:
+
+    docs/preview.jpg         six compositions, for the README
+    prototypes/assets.json   plates inlined into the phone prototype
+
+Everything else the tools produce is rendered on your own machine from scans
+you download yourself; none of them are redistributed here.
+
+NAL asks that use of the paintings carry the credit below. That is a request
+rather than a licence condition, and this project honours it in the README, in
+the generated preview image, and here:
 
   U.S. Department of Agriculture Pomological Watercolor Collection. Rare and
   Special Collections, National Agricultural Library, Beltsville, MD 20705.

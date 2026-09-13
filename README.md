@@ -41,16 +41,16 @@ panel, dock and icons.
 ## Quick start
 
 ```sh
-nix run github:YOU/pomological-watercolors -- db          # catalogue, ~4 MB
-nix run github:YOU/pomological-watercolors -- fetch --limit 200
-nix run github:YOU/pomological-watercolors -- prepare --all
-nix run github:YOU/pomological-watercolors -- set
+nix run github:placeybordeaux/pomological-watercolors-lockscreen -- db          # catalogue, ~4 MB
+nix run github:placeybordeaux/pomological-watercolors-lockscreen -- fetch --limit 200
+nix run github:placeybordeaux/pomological-watercolors-lockscreen -- prepare --all
+nix run github:placeybordeaux/pomological-watercolors-lockscreen -- set
 ```
 
 Without nix, it is Python 3 and Pillow and nothing else:
 
 ```sh
-git clone https://github.com/YOU/pomological-watercolors && cd $_
+git clone https://github.com/placeybordeaux/pomological-watercolors-lockscreen && cd $_
 pip install pillow          # or: nix develop
 scripts/pom db && scripts/pom fetch --limit 200 && scripts/pom prepare --all
 scripts/pom set
@@ -124,7 +124,7 @@ by hand.
 
 ```nix
 {
-  inputs.pomological.url = "github:YOU/pomological-watercolors";
+  inputs.pomological.url = "github:placeybordeaux/pomological-watercolors-lockscreen";
 
   # system: the greeter half, which is the part that needs root
   imports = [ inputs.pomological.nixosModules.default ];
