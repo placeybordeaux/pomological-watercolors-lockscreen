@@ -21,10 +21,11 @@ import os
 
 import pomlib
 
-# The authored notes ship with the code, not with the downloaded data, so the
-# nix package points here rather than into the writable data directory.
+# The authored notes ship with the code, not with the downloaded data, so they
+# are found next to the checkout even when POMOLOGICAL_DATA points elsewhere.
+# The nix package sets POMOLOGICAL_BOTANY because its code lives in the store.
 BOTANY_PATH = (os.environ.get("POMOLOGICAL_BOTANY")
-               or os.path.join(pomlib.DATA_DIR, "botany.json"))
+               or os.path.join(pomlib.REPO_ROOT, "data", "botany.json"))
 
 
 def load_notes() -> dict[str, str]:

@@ -129,7 +129,10 @@ def process(pom_id: str, src_dir: str, height: int, quality: int) -> dict | None
     out = os.path.join(DERIV_DIR, f"{pom_id}.jpg")
     im.save(out, quality=quality, optimize=True, progressive=True)
     info = analyse(im)
-    info.update({"pom_id": pom_id, "path": out, "raw": raw, "trimmed": trimmed,
+    # Deliberately not `out`: this file is published to other machines, where
+    # an absolute path from this one resolves to nothing. Consumers rebuild it
+    # from their own plate directory and the id.
+    info.update({"pom_id": pom_id, "raw": raw, "trimmed": trimmed,
                  "out": im.size, "bytes": os.path.getsize(out)})
     return info
 
@@ -170,6 +173,9 @@ def main() -> int:
         if not info:
             print(f"  ! {pom_id} not on disk")
             continue
+        # Local only, for the contact sheet below; stripped before the analysis
+        # file is written, since that file gets published to other machines.
+        info["path"] = os.path.join(DERIV_DIR, f"{pom_id}.jpg")
         results.append(info)
         cut = 100 * (1 - (info["trimmed"][0] * info["trimmed"][1]) /
                      (info["raw"][0] * info["raw"][1]))
@@ -178,7 +184,7 @@ def main() -> int:
               f"{pomlib.human_bytes(info['bytes'])}")
 
     with open(os.path.join(DERIV_DIR, "_analysis.json"), "w") as fh:
-        json.dump(results, fh)
+        json.dump([{k: v for k, v in r.items() if k != "path"} for r in results], fh)
 
     if args.contact_sheet and results:
         make_contact_sheet(results, args.originals, args.contact_sheet)

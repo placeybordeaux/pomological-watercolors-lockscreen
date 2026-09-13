@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """pom - the USDA Pomological Watercolor Collection, on your screens.
 
-    pom fetch     reconcile the catalogue and download the scans (~56 GB)
-    pom prepare   trim the copy-stand backdrop off and analyse each plate
+    pom fetch     download prepared plates from the mirror (~1.3 GB)
+    pom prepare   re-derive plates from full-resolution scans (maintainers)
     pom compose   render one screen-sized composition, without setting it
     pom set       compose and put it on the desktop, lock and login screens
     pom install   set up the rotation, and whatever the lock screen needs
@@ -11,7 +11,7 @@
 Every subcommand takes --help, and anything that writes takes --dry-run.
 Start with:
 
-    pom fetch --limit 200 && pom prepare --all && pom set
+    pom fetch && pom set
 """
 import os
 import sys
@@ -22,7 +22,7 @@ sys.path.insert(0, HERE)
 # (subcommand, module, what it is) -- `set` and `install` are the same module,
 # with install flipping one flag, because they share all their configuration.
 COMMANDS = {
-    "fetch": ("download_images", []),
+    "fetch": ("fetch", []),
     "db": ("build_db", []),
     "prepare": ("prepare", []),
     "compose": ("compose", []),

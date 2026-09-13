@@ -265,10 +265,13 @@ def load_pool() -> list[dict]:
     pool = []
     for a in analysis:
         r = rows.get(a["pom_id"])
-        if not r or not os.path.exists(a["path"]):
+        # Reconstructed rather than read: an analysis file downloaded from the
+        # mirror was written on someone else's machine.
+        path = os.path.join(PLATE_DIR, f"{a['pom_id']}.jpg")
+        if not r or not os.path.exists(path):
             continue
         pool.append({
-            "pom_id": a["pom_id"], "path": a["path"], "paper": tuple(a["paper"]),
+            "pom_id": a["pom_id"], "path": path, "paper": tuple(a["paper"]),
             "aspect": a["aspect"], "cells": a["cells"], "rows": a["rows"], "cols": a["cols"],
             "common": r["common_name"], "variety": r["variety"], "sci": r["sci_name"],
             "artist_short": artist_short(r["artist"]), "year": r["year"],

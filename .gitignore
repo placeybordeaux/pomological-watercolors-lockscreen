@@ -22,3 +22,8 @@ __pycache__/
 # NAL's metadata export. `pom db` downloads it from the Internet Archive, so
 # shipping 3.9 MB of it would just be a stale copy.
 data/pom_metadata.csv
+
+# Mirror build output: 1.3 GB of tarballs, published as release assets by
+# scripts/mirror.py rather than committed.
+data/mirror/
+data/mirror-dl/
