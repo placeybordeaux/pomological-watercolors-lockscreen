@@ -312,7 +312,13 @@ def write(path: str, body: str, dry: bool) -> None:
 
 def status() -> int:
     st = load_state()
-    pool_n = len(compose.load_pool())
+    try:
+        pool_n = len(compose.load_pool())
+    except compose.NotPrepared as exc:
+        # status() is what someone runs to find out what is missing, so it has
+        # to survive the thing being missing.
+        print(f"🍎 {exc}")
+        pool_n = 0
     print(f"   desktop  detected as {surfaces.detect().name}")
     unshown = pool_n - len(st.get("shown", []))
     print(f"🍎 pool {pool_n} plates · {unshown} unshown "

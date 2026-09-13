@@ -240,7 +240,21 @@ def county(geo: str | None) -> str:
     return co or state or parts[0]
 
 
+class NotPrepared(SystemExit):
+    """Raised instead of a traceback when the data has not been built yet."""
+
+
 def load_pool() -> list[dict]:
+    if not os.path.exists(pomlib.DB_PATH):
+        raise NotPrepared(
+            f"no catalogue at {pomlib.DB_PATH}\n"
+            f"  build it first:  pom db            (downloads the metadata, ~4 MB)\n"
+            f"  then the scans:  pom fetch --limit 200")
+    if not os.path.exists(ANALYSIS):
+        raise NotPrepared(
+            f"no prepared plates in {PLATE_DIR}\n"
+            f"  prepare them first:  pom prepare --all\n"
+            f"  or a quick sample:   pom prepare --sample 60")
     with open(ANALYSIS) as fh:
         analysis = json.load(fh)
     conn = pomlib.connect()
@@ -264,7 +278,9 @@ def load_pool() -> list[dict]:
         })
     conn.close()
     if not pool:
-        raise SystemExit(f"no prepared plates in {PLATE_DIR} - run scripts/prepare.py first")
+        raise NotPrepared(
+            f"{len(analysis)} plates are analysed but none are on disk in {PLATE_DIR}\n"
+            f"  re-run:  pom prepare --all")
     return pool
 
 
