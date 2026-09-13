@@ -320,7 +320,7 @@ def status() -> int:
         print(f"🍎 {exc}")
         pool_n = 0
     print(f"   desktop  detected as {surfaces.detect().name}")
-    unshown = pool_n - len(st.get("shown", []))
+    unshown = max(0, pool_n - len(st.get("shown", [])))
     print(f"🍎 pool {pool_n} plates · {unshown} unshown "
           f"· {st.get('laps', 0)} laps · last {st.get('treatment', '—')}")
     cur = st.get("current")
