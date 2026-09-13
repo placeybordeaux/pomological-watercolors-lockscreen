@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""pom - the USDA Pomological Watercolor Collection, on your screens.
+
+    pom fetch     reconcile the catalogue and download the scans (~56 GB)
+    pom prepare   trim the copy-stand backdrop off and analyse each plate
+    pom compose   render one screen-sized composition, without setting it
+    pom set       compose and put it on the desktop, lock and login screens
+    pom install   set up the rotation, and whatever the lock screen needs
+    pom status    what is installed, and how far through the collection it is
+
+Every subcommand takes --help, and anything that writes takes --dry-run.
+Start with:
+
+    pom fetch --limit 200 && pom prepare --all && pom set
+"""
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+
+# (subcommand, module, what it is) -- `set` and `install` are the same module,
+# with install flipping one flag, because they share all their configuration.
+COMMANDS = {
+    "fetch": ("download_images", []),
+    "db": ("build_db", []),
+    "prepare": ("prepare", []),
+    "compose": ("compose", []),
+    "set": ("set_wallpaper", []),
+    "install": ("set_wallpaper", ["--install"]),
+    "status": ("set_wallpaper", ["--status"]),
+    "watch": ("set_wallpaper", ["--watch"]),
+    "stats": ("stats", []),
+}
+
+
+def main() -> int:
+    if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help", "help"):
+        print(__doc__.strip())
+        return 0
+    cmd = sys.argv[1]
+    if cmd not in COMMANDS:
+        print(f"unknown command {cmd!r}\n", file=sys.stderr)
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    module_name, extra = COMMANDS[cmd]
+    sys.argv = [f"pom {cmd}"] + extra + sys.argv[2:]
+    module = __import__(module_name)
+    return module.main()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,918 @@
+<title>Pomological Lock Screens</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@300;400;500;600&display=swap">
+<style>
+/* ---------------------------------------------------------------------------
+   Palette taken from the scans themselves: the cream rag sheet, the iron-gall
+   annotations, the sap green of the foliage, and the near-black copy-stand
+   backdrop the plates were photographed on (which the pipeline crops away).
+   Light theme = the mat board. Dark theme = the copy stand.
+   --------------------------------------------------------------------------- */
+:root {
+  --ground:      #DFDACD;
+  --ground-2:    #D2CCBC;
+  --surface:     #F7F4EC;
+  --surface-2:   #EBE6DA;
+  --ink:         #201E1A;
+  --ink-2:       #5C5648;
+  --ink-3:       #8A8373;
+  --accent:      #4C6138;
+  --accent-ink:  #F7F4EC;
+  --accent-soft: rgba(76, 97, 56, .13);
+  --rule:        rgba(32, 30, 26, .16);
+  --rule-soft:   rgba(32, 30, 26, .08);
+  --shadow:      0 1px 2px rgba(32,30,26,.10), 0 10px 26px rgba(32,30,26,.14);
+  --stand:       #1A1A1E;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #131216;
+    --ground-2:    #0D0C10;
+    --surface:     #1D1C21;
+    --surface-2:   #26242B;
+    --ink:         #EDE8DC;
+    --ink-2:       #A9A18F;
+    --ink-3:       #746D5D;
+    --accent:      #9DB275;
+    --accent-ink:  #16160F;
+    --accent-soft: rgba(157, 178, 117, .15);
+    --rule:        rgba(237, 232, 220, .16);
+    --rule-soft:   rgba(237, 232, 220, .07);
+    --shadow:      0 1px 2px rgba(0,0,0,.5), 0 14px 34px rgba(0,0,0,.5);
+    --stand:       #0A0A0C;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:      #131216;
+  --ground-2:    #0D0C10;
+  --surface:     #1D1C21;
+  --surface-2:   #26242B;
+  --ink:         #EDE8DC;
+  --ink-2:       #A9A18F;
+  --ink-3:       #746D5D;
+  --accent:      #9DB275;
+  --accent-ink:  #16160F;
+  --accent-soft: rgba(157, 178, 117, .15);
+  --rule:        rgba(237, 232, 220, .16);
+  --rule-soft:   rgba(237, 232, 220, .07);
+  --shadow:      0 1px 2px rgba(0,0,0,.5), 0 14px 34px rgba(0,0,0,.5);
+  --stand:       #0A0A0C;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Public Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 72px; }
+
+/* --- masthead ------------------------------------------------------------ */
+.masthead { padding: 56px 0 28px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--ink-3); margin: 0 0 18px;
+}
+h1 {
+  font-family: Fraunces, Georgia, "Times New Roman", serif;
+  font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 120;
+  font-weight: 600;
+  font-size: clamp(34px, 5.2vw, 56px);
+  line-height: 1.02; letter-spacing: -.018em;
+  margin: 0 0 20px; text-wrap: balance; max-width: 17ch;
+}
+.deck { font-size: 17px; line-height: 1.6; color: var(--ink-2); max-width: 64ch; margin: 0 0 6px; }
+.deck strong { color: var(--ink); font-weight: 500; }
+.deck + .deck { margin-top: 14px; }
+
+/* --- control rail -------------------------------------------------------- */
+.rail {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--ground);
+  background: color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  margin: 34px 0 0;
+}
+.rail-inner {
+  max-width: 1180px; margin: 0 auto; padding: 12px 24px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 20px 28px;
+}
+.ctl { display: flex; align-items: center; gap: 10px; }
+.ctl-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-3); white-space: nowrap;
+}
+.specimens { display: flex; gap: 6px; }
+.spec {
+  width: 38px; height: 50px; padding: 0; border-radius: 2px; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--surface-2) center/cover no-repeat;
+  filter: saturate(.82); transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+.spec:hover { transform: translateY(-2px); filter: saturate(1); }
+.spec[aria-pressed="true"] {
+  filter: saturate(1);
+  box-shadow: 0 0 0 2px var(--ground), 0 0 0 3.5px var(--accent);
+}
+.seg { display: flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.seg button {
+  font: inherit; font-size: 12.5px; padding: 5px 13px; cursor: pointer;
+  background: transparent; color: var(--ink-2); border: 0;
+  border-right: 1px solid var(--rule);
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 500; }
+.btn {
+  font: inherit; font-size: 12.5px; font-weight: 500; padding: 6px 15px; cursor: pointer;
+  border: 1px solid var(--ink-2); border-radius: 3px;
+  background: transparent; color: var(--ink);
+}
+.btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+button:focus-visible, .spec:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* --- specimen caption ---------------------------------------------------- */
+.nowshowing {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px;
+  padding: 18px 0 2px; border-bottom: 1px solid var(--rule-soft);
+}
+.ns-name {
+  font-family: Fraunces, Georgia, serif; font-variation-settings: "SOFT" 30, "opsz" 40;
+  font-size: 21px; font-weight: 600; letter-spacing: -.01em;
+}
+.ns-sci { font-style: italic; color: var(--ink-2); font-size: 15px; }
+.ns-meta {
+  font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--ink-3);
+  margin-left: auto; text-align: right;
+}
+.ns-why {
+  font-size: 13.5px; color: var(--ink-2); padding: 8px 0 0; max-width: 70ch;
+}
+.ns-why b { color: var(--accent); font-weight: 600; }
+
+/* --- plate grid ---------------------------------------------------------- */
+.plates {
+  display: grid; gap: 44px 34px; padding: 34px 0 0;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+}
+.plate { margin: 0; display: flex; flex-direction: column; gap: 0; }
+.plate-head {
+  display: flex; align-items: baseline; gap: 9px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--rule);
+}
+.plate-n {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3);
+}
+.plate-name {
+  font-family: "IBM Plex Mono", monospace; font-size: 13.5px; font-weight: 500;
+  letter-spacing: -.01em; color: var(--ink);
+}
+.stage {
+  display: flex; justify-content: center;
+  padding: 30px 0 26px;
+  background:
+    radial-gradient(120% 74% at 50% 6%, rgba(255,255,255,.045), transparent 72%),
+    var(--stand);
+  border-radius: 2px;
+}
+.plate-notes { padding-top: 14px; display: grid; gap: 7px; }
+.note { display: grid; grid-template-columns: 52px 1fr; gap: 10px; font-size: 13px; line-height: 1.5; }
+.note dt {
+  font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-3); padding-top: 3px;
+}
+.note dd { margin: 0; color: var(--ink-2); }
+.note.bet dd { color: var(--ink); }
+
+/* --- the phone ----------------------------------------------------------- */
+.phone {
+  --pw: 218px;
+  position: relative; width: var(--pw); aspect-ratio: 9 / 19.5;
+  border-radius: 26px; overflow: hidden; isolation: isolate;
+  background: #000;
+  box-shadow: 0 0 0 1.5px rgba(255,255,255,.16), 0 0 0 7px #101013,
+              0 18px 40px rgba(0,0,0,.55);
+  transition: opacity .34s ease;
+}
+.phone.asleep { opacity: .04; }
+@media (prefers-reduced-motion: reduce) { .phone { transition: none; } }
+
+.wall { position: absolute; inset: 0; background-repeat: no-repeat; }
+.veil { position: absolute; inset: 0; pointer-events: none; }
+
+/* UI layer. --fg / --halo are set per variant; adaptive-ink overrides them
+   per element from the luminance it measures underneath. */
+.ui {
+  --fg: #fff;
+  --halo: 0 1px 3px rgba(0,0,0,.55);
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  color: var(--fg); font-size: 10px;
+}
+.statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 16px 0; font-size: 8.5px; font-weight: 600;
+  color: var(--fg); text-shadow: var(--halo); letter-spacing: .01em;
+}
+.sb-r { display: flex; gap: 3px; align-items: center; font-size: 7.5px; letter-spacing: .06em; }
+
+/* lock screen */
+.lockstack { padding: 26px 16px 0; text-align: center; }
+.clock {
+  font-size: 52px; font-weight: 300; line-height: .96; letter-spacing: -.028em;
+  color: var(--fg); text-shadow: var(--halo); font-variant-numeric: tabular-nums;
+}
+.lockdate {
+  font-size: 9.5px; font-weight: 500; margin-top: 5px; letter-spacing: .01em;
+  color: var(--fg); text-shadow: var(--halo); opacity: .92;
+}
+.notifs { margin-top: auto; padding: 0 12px 10px; display: grid; gap: 5px; }
+.notif {
+  display: flex; align-items: center; gap: 7px; padding: 7px 9px;
+  border-radius: 11px; font-size: 8px; font-weight: 500;
+  background: rgba(120,120,125,.30); backdrop-filter: blur(9px);
+  color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+.ui.on-light .notif { background: rgba(255,255,255,.62); color: #22201A; text-shadow: none; }
+.ui.on-light .ndot { background: rgba(42,38,30,.34); }
+.ui.on-light .lbtn { background: rgba(255,255,255,.58); color: #22201A; }
+.ui.on-light .dock { background: rgba(255,255,255,.40); }
+.ndot { width: 11px; height: 11px; border-radius: 3px; background: rgba(255,255,255,.55); flex: none; }
+.lockbar { display: flex; justify-content: space-between; align-items: center; padding: 0 22px 12px; }
+.lbtn {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(30,30,34,.42); backdrop-filter: blur(8px); font-size: 10px; color: #fff;
+}
+.grabber { width: 62px; height: 3px; border-radius: 2px; background: var(--fg); opacity: .8; box-shadow: var(--halo); }
+
+/* home screen */
+.appgrid {
+  padding: 16px 14px 0; display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 11px 8px;
+}
+.app { display: grid; justify-items: center; gap: 3px; }
+.icon {
+  width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+  font-size: 14px; color: rgba(255,255,255,.94);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 1px 3px rgba(0,0,0,.28);
+}
+.app span {
+  font-size: 6.5px; font-weight: 500; letter-spacing: .005em;
+  color: var(--fg); text-shadow: var(--halo); white-space: nowrap;
+}
+.dock {
+  margin-top: auto; margin-bottom: 12px; margin-inline: 12px; padding: 9px 10px;
+  border-radius: 18px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  background: rgba(120,120,125,.26); backdrop-filter: blur(10px);
+}
+.dock .icon { width: 32px; height: 32px; }
+
+/* --- treatment-specific chrome ------------------------------------------ */
+.mat-caption {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 0 16px 26px;
+  text-align: center; font-family: "IBM Plex Mono", monospace;
+  font-size: 6.5px; letter-spacing: .1em; text-transform: uppercase;
+}
+.plate-card {
+  position: absolute; inset: var(--card-top, 62px) 16px var(--card-bot, 58px); border-radius: 3px;
+  background: var(--card, #F4F0E4);
+  box-shadow: 0 2px 4px rgba(0,0,0,.3), 0 14px 30px rgba(0,0,0,.4);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.plate-card .pc-img { flex: 1; min-height: 0; background: center/contain no-repeat; margin: 11px 11px 7px; }
+.plate-card .pc-cap { padding: 0 12px 12px; color: #26231C; }
+.pc-rule { height: 1px; background: rgba(38,35,28,.22); margin: 0 12px 8px; }
+.pc-name {
+  font-family: Fraunces, Georgia, serif; font-variation-settings: "SOFT" 30, "opsz" 30;
+  font-size: 13px; font-weight: 600; line-height: 1.1;
+}
+.pc-sci { font-style: italic; font-size: 8px; color: #56503F; margin-top: 1px; }
+.pc-meta {
+  font-family: "IBM Plex Mono", monospace; font-size: 6px; letter-spacing: .07em;
+  text-transform: uppercase; color: #6E6752; margin-top: 6px; line-height: 1.5;
+}
+
+/* --- diagnostics --------------------------------------------------------- */
+.diag {
+  display: grid; grid-template-columns: auto auto 1fr; gap: 20px; align-items: center;
+  margin-top: 20px; padding: 16px 18px;
+  border: 1px solid var(--rule); border-radius: 3px; background: var(--surface);
+}
+.diag canvas { border-radius: 2px; display: block; background: var(--surface-2); }
+.diag-text { font-size: 13px; color: var(--ink-2); max-width: 52ch; }
+.diag-text h4 {
+  margin: 0 0 5px; font-family: "IBM Plex Mono", monospace; font-size: 11px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink); font-weight: 500;
+}
+.key { display: flex; gap: 14px; margin-top: 9px; font-size: 11px; color: var(--ink-3); }
+.key i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; }
+
+/* --- change policy ------------------------------------------------------- */
+.policy { margin-top: 68px; padding-top: 30px; border-top: 2px solid var(--ink); }
+.policy h2, .closing h2 {
+  font-family: Fraunces, Georgia, serif; font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 60;
+  font-size: 27px; font-weight: 600; letter-spacing: -.014em; margin: 0 0 10px;
+}
+.policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 26px; margin-top: 26px; }
+.rule-item { display: grid; gap: 5px; align-content: start; }
+.rule-when {
+  font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--accent); font-weight: 500;
+}
+.rule-item h3 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -.005em; }
+.rule-item p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+code {
+  font-family: "IBM Plex Mono", monospace; font-size: .87em;
+  background: var(--accent-soft); padding: 1px 5px; border-radius: 2px; color: var(--ink);
+}
+.caveat {
+  margin-top: 26px; padding: 15px 18px; border-left: 2px solid var(--accent);
+  background: var(--surface); font-size: 13.5px; color: var(--ink-2); border-radius: 0 3px 3px 0;
+}
+.caveat b { color: var(--ink); font-weight: 600; }
+
+.closing { margin-top: 56px; padding-top: 26px; border-top: 1px solid var(--rule); }
+.closing p { font-size: 14.5px; color: var(--ink-2); max-width: 66ch; }
+.closing ol { max-width: 66ch; padding-left: 20px; color: var(--ink-2); font-size: 14.5px; }
+.closing li { margin-bottom: 7px; }
+.closing li b { color: var(--ink); font-weight: 600; }
+
+footer {
+  margin-top: 46px; padding-top: 18px; border-top: 1px solid var(--rule-soft);
+  font-size: 11.5px; color: var(--ink-3); line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .wrap { padding: 0 16px 52px; }
+  .rail-inner { padding: 11px 16px; gap: 14px 18px; }
+  .diag { grid-template-columns: auto auto; }
+}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">USDA Pomological Watercolor Collection · 7,584 plates · 1886–1942</p>
+    <h1>Six ways to put a clock on a watercolor</h1>
+    <p class="deck">These paintings were made to be looked at on a table, not behind a clock,
+      a date, three notifications and twelve app labels. Most of every sheet is bare cream
+      rag paper, so <strong>white text disappears</strong> — and where the paint is dense,
+      dark text disappears instead.</p>
+    <p class="deck">Same painting in all six phones, same clock, same notifications. The only
+      thing that changes is <strong>how the picture and the interface negotiate</strong> —
+      from not touching the image at all, to reframing it completely.</p>
+  </header>
+</div>
+
+<div class="rail">
+  <div class="rail-inner">
+    <div class="ctl">
+      <span class="ctl-label">Specimen</span>
+      <div class="specimens" id="specimens"></div>
+    </div>
+    <div class="ctl">
+      <span class="ctl-label">Screen</span>
+      <div class="seg" id="screenSeg">
+        <button type="button" data-screen="lock" aria-pressed="true">Lock</button>
+        <button type="button" data-screen="home" aria-pressed="false">Home</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span class="ctl-label">Reading</span>
+      <div class="seg" id="diagSeg">
+        <button type="button" data-diag="off" aria-pressed="true">Off</button>
+        <button type="button" data-diag="on" aria-pressed="false">What the app sees</button>
+      </div>
+    </div>
+    <button class="btn" id="cycleBtn" type="button">Lock &amp; wake ↻</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="nowshowing">
+    <span class="ns-name" id="nsName">—</span>
+    <span class="ns-sci" id="nsSci"></span>
+    <span class="ns-meta" id="nsMeta"></span>
+  </div>
+  <p class="ns-why" id="nsWhy"></p>
+
+  <div class="diag" id="diag" hidden>
+    <canvas id="diagA" width="132" height="200"></canvas>
+    <canvas id="diagB" width="132" height="200"></canvas>
+    <div class="diag-text">
+      <h4>Detail map</h4>
+      <p>Every plate is reduced to an 8 × 16 grid of <em>local contrast</em>. Busy cells are
+        where a thin clock digit gets lost in brushwork; flat cells are safe to write on, whatever
+        their colour. The green band marks the calmest strip <em>quiet-crop</em> found, and it is
+        the strip that treatment slides under the clock.</p>
+      <div class="key">
+        <span><i style="background:#2F6F4E"></i>flat — safe</span>
+        <span><i style="background:#C9A227"></i>textured</span>
+        <span><i style="background:#B23A2E"></i>busy — avoid</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="plates" id="plates"></div>
+
+  <section class="policy">
+    <h2>Changing it without you noticing</h2>
+    <p class="deck">An hourly wallpaper that swaps while you are reading the screen is a
+      distraction. The fix is not a slower timer — it is to <strong>only ever change across a
+      dark boundary</strong>, so every change happens in a moment you were not looking.</p>
+
+    <div class="policy-grid">
+      <div class="rule-item">
+        <span class="rule-when">On screen off</span>
+        <h3>Swap in the dark, never on a tick</h3>
+        <p>The change is triggered by the screen going <em>off</em>, not by the clock reaching
+          the hour. On Android that is <code>Engine.onVisibilityChanged(false)</code>; the
+          <code>ACTION_SCREEN_OFF</code> broadcast is the fallback. The timer only decides
+          whether a swap is <em>due</em>.</p>
+      </div>
+      <div class="rule-item">
+        <span class="rule-when">≥ 60 min since last</span>
+        <h3>One painting per hour, not per glance</h3>
+        <p>Gate on <code>now − lastChange ≥ 1h</code>. Checking the time fifteen times in a
+          minute should not burn fifteen paintings — you would never see any of them.</p>
+      </div>
+      <div class="rule-item">
+        <span class="rule-when">Before wake</span>
+        <h3>Decode while it is still dark</h3>
+        <p>Crop, scale and compose the next plate while the screen is off, and hold the finished
+          bitmap. Waking should reveal a picture that is already there — no fade, no load, no
+          visible moment of change.</p>
+      </div>
+      <div class="rule-item">
+        <span class="rule-when">Always-on display</span>
+        <h3>Screen off is not the same as unwatched</h3>
+        <p>With an always-on display the screen is technically off and still visible. Suppress
+          the swap while AOD is showing and let it happen at the next real blackout.</p>
+      </div>
+      <div class="rule-item">
+        <span class="rule-when">Order</span>
+        <h3>Shuffle a ring, don't roll dice</h3>
+        <p>Walk a shuffled ring of all 7,581 plates rather than picking at random, so nothing
+          repeats until the whole collection has been seen. At one an hour that is
+          <strong>316 days</strong> before you meet the same painting twice.</p>
+      </div>
+      <div class="rule-item">
+        <span class="rule-when">Exception</span>
+        <h3>Hold a plate you reached for</h3>
+        <p>If you tapped through to read what a painting is, don't take it away an hour later.
+          Anything you interacted with pins until you dismiss it.</p>
+      </div>
+    </div>
+
+    <p class="caveat"><b>Platform reality.</b> Android gives you all of this through a
+      <code>WallpaperService</code>, lock screen included. iOS has no third-party live
+      wallpapers — the closest equivalents are the built-in Photos shuffle (which already
+      changes on lock, but won't apply any of these treatments) or a Shortcuts automation on
+      <em>Sleep Focus</em> that swaps a pre-rendered image. <b>Which phone is this for?</b>
+      It decides whether the treatments below can be computed on device per painting, or have
+      to be baked into a folder of finished images ahead of time.</p>
+  </section>
+
+  <section class="closing">
+    <h2>What I'd want to know</h2>
+    <ol>
+      <li><b>Which treatment survives a week?</b> Full-bleed drama photographs well and grates
+        by Thursday; the quieter ones tend to win on a device you unlock ninety times a day.</li>
+      <li><b>Is the handwriting an asset or a mess?</b> Every sheet carries the artist's pencil
+        notes — variety, date, the grower's county. <em>botanical-plate</em> treats them as the
+        point; the full-bleed treatments crop them off entirely.</li>
+      <li><b>Does the clock have to stay put?</b> <em>quiet-crop</em> is the only one that moves
+        the painting to suit the clock. It reads best when the paintings differ a lot, and it is
+        also the only one that can surprise you.</li>
+    </ol>
+  </section>
+
+  <footer>
+    Plates from the U.S. Department of Agriculture Pomological Watercolor Collection, Rare and
+    Special Collections, National Agricultural Library, Beltsville, MD 20705. Public domain.
+    Scans trimmed from their copy-stand backdrop and analysed locally; no image leaves the device.
+  </footer>
+</div>
+
+<script>
+const SPECIMENS = /*__DATA__*/;
+
+/* Treatments, in order of how much they touch the painting: nothing at all,
+   then move it, then veil it, then wash it, then reframe it entirely. */
+const TREATMENTS = [
+  { id: "adaptive-ink",     bet: "Don't touch a public-domain painting. Measure what is under each piece of text and choose the ink — white, black, weight, halo — to suit that spot.",
+    cost: "Nothing guarantees contrast over busy brushwork. A halo strong enough to always work is its own kind of grubby." },
+  { id: "quiet-crop",       bet: "Let the painting decide where the clock goes: pan and zoom each plate so its calmest strip lands under the time, then ink to match.",
+    cost: "Every plate frames differently, so the clock never sits on the same thing twice. Needs the detail map computed per image." },
+  { id: "fill-and-scrim",   bet: "The conventional answer. Fill the screen and lay a gradient veil under the status bar and the clock so any text is legible on any plate.",
+    cost: "A grey film over cream paper reads as dirt, not shade — and filling a 9:19.5 screen crops a third of the width off a 2:3 painting." },
+  { id: "paper-wash",       bet: "Push the whole plate toward its own paper tone — desaturated, lifted, low contrast — so it becomes a textured ground that any text sits on.",
+    cost: "Gives up the exact thing that makes these worth using. The colour is the reason you noticed the collection." },
+  { id: "paper-mat",        bet: "Don't crop at all. Float the whole sheet low on a mat sampled from its own paper, and let the clock live in honest empty space above it.",
+    cost: "Not edge-to-edge, so it reads as a picture frame rather than a wallpaper. The painting ends up notably smaller." },
+  { id: "botanical-plate",  bet: "Stop pretending it is a photo. Set it as a catalogue plate — card, caption, binomial, artist, grower's county — with the clock as the plate's header.",
+    cost: "It is a different product: an object you read, not a backdrop. Busiest of the six, and the least like a wallpaper." },
+];
+
+const state = { spec: 0, screen: "lock", diag: false };
+const analysis = new Map();   // pom id -> detail/luma grid
+const images   = new Map();   // pom id -> decoded HTMLImageElement
+
+const PHONE_ASPECT = 9 / 19.5;
+const GRID_C = 8, GRID_R = 16;
+
+/* ---- analysis ----------------------------------------------------------- */
+function analyse(img) {
+  const cw = 16, ch = 16;
+  const cv = document.createElement("canvas");
+  cv.width = GRID_C * cw; cv.height = GRID_R * ch;
+  const ctx = cv.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, cv.width, cv.height);
+  const d = ctx.getImageData(0, 0, cv.width, cv.height).data;
+  const cells = [];
+  for (let r = 0; r < GRID_R; r++) {
+    for (let c = 0; c < GRID_C; c++) {
+      let s = 0, s2 = 0, n = 0;
+      for (let y = r * ch; y < (r + 1) * ch; y++) {
+        for (let x = c * cw; x < (c + 1) * cw; x++) {
+          const i = (y * cv.width + x) * 4;
+          const l = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+          s += l; s2 += l * l; n++;
+        }
+      }
+      const m = s / n;
+      cells.push({ luma: m, detail: Math.sqrt(Math.max(0, s2 / n - m * m)) });
+    }
+  }
+  return { cells };
+}
+
+/* Map a rectangle of the phone screen (0..1) back onto the image and average
+   the cells it covers. `t` is the same transform the CSS background uses. */
+function sampleRegion(an, t, imgAspect, x0, y0, x1, y1) {
+  const pw = 1, ph = 1 / PHONE_ASPECT;
+  const dh = ph * t.z, dw = dh * imgAspect;
+  const offX = t.ox * (pw - dw), offY = t.oy * (ph - dh);
+  let luma = 0, detail = 0, n = 0, peak = 0;
+  for (let r = 0; r < GRID_R; r++) {
+    for (let c = 0; c < GRID_C; c++) {
+      const ix0 = (c / GRID_C) * dw + offX, ix1 = ((c + 1) / GRID_C) * dw + offX;
+      const iy0 = (r / GRID_R) * dh + offY, iy1 = ((r + 1) / GRID_R) * dh + offY;
+      if (ix1 < x0 * pw || ix0 > x1 * pw || iy1 < y0 * ph || iy0 > y1 * ph) continue;
+      const cell = an.cells[r * GRID_C + c];
+      luma += cell.luma; detail += cell.detail; peak = Math.max(peak, cell.detail); n++;
+    }
+  }
+  return n ? { luma: luma / n, detail: detail / n, peak } : { luma: 128, detail: 20, peak: 20 };
+}
+
+/* Search pan + zoom for the framing that puts the calmest, most decisively
+   light-or-dark strip under the clock. Mid-greys are penalised because neither
+   white nor black ink reads well on them. */
+function quietCrop(an, imgAspect) {
+  let best = null;
+  for (const z of [1, 1.08, 1.16, 1.24, 1.32]) {
+    for (let oxi = 0; oxi <= 10; oxi++) {
+      for (let oyi = 0; oyi <= (z > 1.001 ? 10 : 0); oyi++) {
+        const t = { z, ox: oxi / 10, oy: z > 1.001 ? oyi / 10 : 0.5 };
+        const clock = sampleRegion(an, t, imgAspect, 0.06, 0.11, 0.94, 0.30);
+        const midtone = 1 - Math.abs(clock.luma - 128) / 128;
+        const cost = 1.25 * (clock.detail / 60) + 0.95 * midtone
+                   + 0.35 * (clock.peak / 90) + 0.16 * ((z - 1) / 0.32);
+        if (!best || cost < best.cost) best = { ...t, cost, luma: clock.luma };
+      }
+    }
+  }
+  return best;
+}
+
+/* ---- ink ---------------------------------------------------------------- */
+function ink(luma, busy) {
+  // Above this the paper is light enough that near-black is the only real option.
+  const dark = luma > 145;
+  const strength = Math.min(0.62, 0.26 + (busy || 0) / 110);
+  return dark
+    ? { fg: "#1A1712", halo: `0 1px 2px rgba(255,255,255,${strength})` }
+    : { fg: "#FFFFFF", halo: `0 1px 3px rgba(0,0,0,${strength + 0.14})` };
+}
+
+/* ---- UI furniture ------------------------------------------------------- */
+const APPS = [["✉","Mail"],["◈","Maps"],["✎","Notes"],["◉","Camera"],
+              ["❀","Photos"],["♪","Music"],["☁","Weather"],["◔","Clock"],
+              ["▤","Files"],["▦","Calendar"],["◍","Browser"],["⚙","Settings"]];
+const DOCK = [["✆","Phone"],["✉","Mail"],["◍","Browser"],["♪","Music"]];
+const ICON_TINTS = ["#4B6B84","#7C6A4E","#5E7350","#8A5B58","#6B5E82","#3F6E6B",
+                    "#87704A","#4E5C75","#6E6A55","#7A5570","#456E5A","#6A6A70"];
+
+function clockNow() {
+  const d = new Date();
+  return { t: d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(/\s?[AP]M/i, ""),
+           full: d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" }) };
+}
+
+function uiHTML(screen) {
+  const { t, full } = clockNow();
+  const bar = `<div class="statusbar"><span>${t}</span>
+      <span class="sb-r"><span>▁▃▅</span><span>◗</span><span>▮</span></span></div>`;
+  if (screen === "home") {
+    const cells = APPS.map(([g, n], i) =>
+      `<div class="app"><div class="icon" style="background:linear-gradient(160deg,${ICON_TINTS[i]},${ICON_TINTS[i]}bb)">${g}</div><span>${n}</span></div>`).join("");
+    const dock = DOCK.map(([g, n], i) =>
+      `<div class="icon" style="background:linear-gradient(160deg,${ICON_TINTS[i + 2]},${ICON_TINTS[i + 2]}bb)">${g}</div>`).join("");
+    return `${bar}<div class="appgrid">${cells}</div><div class="dock">${dock}</div>`;
+  }
+  return `${bar}
+    <div class="lockstack"><div class="clock">${t}</div><div class="lockdate">${full}</div></div>
+    <div class="notifs">
+      <div class="notif"><span class="ndot"></span><span>Calendar · Standup in 15 min</span></div>
+      <div class="notif"><span class="ndot"></span><span>Messages · 2 new</span></div>
+    </div>
+    <div class="lockbar"><span class="lbtn">✦</span><span class="grabber"></span><span class="lbtn">◉</span></div>`;
+}
+
+/* ---- build ------------------------------------------------------------- */
+function buildPlates() {
+  document.getElementById("plates").innerHTML = TREATMENTS.map((tr, i) => `
+    <figure class="plate">
+      <div class="plate-head">
+        <span class="plate-n">${String(i + 1).padStart(2, "0")}</span>
+        <span class="plate-name">${tr.id}</span>
+      </div>
+      <div class="stage">
+        <div class="phone" data-t="${tr.id}">
+          <div class="wall"></div><div class="veil"></div>
+          <div class="ui">${uiHTML(state.screen)}</div>
+        </div>
+      </div>
+      <dl class="plate-notes">
+        <div class="note bet"><dt>Bet</dt><dd>${tr.bet}</dd></div>
+        <div class="note"><dt>Cost</dt><dd>${tr.cost}</dd></div>
+      </dl>
+    </figure>`).join("");
+}
+
+function buildSpecimens() {
+  document.getElementById("specimens").innerHTML = SPECIMENS.map((s, i) =>
+    `<button class="spec" type="button" data-i="${i}" title="${s.variety} — ${s.common}"
+       aria-label="${s.variety}, ${s.common}" aria-pressed="${i === 0}"
+       style="background-image:url('${s.src}')"></button>`).join("");
+}
+
+/* ---- render ------------------------------------------------------------ */
+function render() {
+  const s = SPECIMENS[state.spec];
+  const imgAspect = s.w / s.h;
+  const an = analysis.get(s.id);
+  const paper = `rgb(${s.paper.join(",")})`;
+
+  document.getElementById("nsName").textContent = s.variety || "Unnamed";
+  document.getElementById("nsSci").textContent = s.sci || "";
+  document.getElementById("nsMeta").textContent =
+    `${s.id} · ${s.artist || "unknown"} · ${s.year || "n.d."}`;
+  document.getElementById("nsWhy").innerHTML = `<b>Why this one:</b> ${s.why}.`;
+
+  document.querySelectorAll(".spec").forEach((b, i) =>
+    b.setAttribute("aria-pressed", String(i === state.spec)));
+
+  for (const phone of document.querySelectorAll(".phone")) {
+    const t = phone.dataset.t;
+    const wall = phone.querySelector(".wall");
+    const veil = phone.querySelector(".veil");
+    const ui = phone.querySelector(".ui");
+
+    // reset everything a previous treatment may have set
+    wall.style.cssText = "";
+    veil.style.cssText = "";
+    ui.style.cssText = "";
+    ui.classList.remove("on-light");
+    ui.innerHTML = uiHTML(state.screen);
+    phone.querySelector(".plate-card")?.remove();
+    phone.querySelector(".mat-caption")?.remove();
+    phone.style.background = "#000";
+
+    const cover = { z: 1, ox: 0.5, oy: 0.5 };
+    const setBg = (tr, filter) => {
+      wall.style.backgroundImage = `url('${s.src}')`;
+      wall.style.backgroundSize = `auto ${tr.z * 100}%`;
+      wall.style.backgroundPosition = `${tr.ox * 100}% ${tr.oy * 100}%`;
+      if (filter) wall.style.filter = filter;
+    };
+
+    if (t === "fill-and-scrim") {
+      setBg(cover);
+      veil.style.background =
+        "linear-gradient(to bottom, rgba(16,14,12,.62) 0%, rgba(16,14,12,.34) 22%, rgba(16,14,12,0) 42%)," +
+        "linear-gradient(to top, rgba(16,14,12,.52) 0%, rgba(16,14,12,0) 26%)";
+      ui.style.setProperty("--fg", "#fff");
+      ui.style.setProperty("--halo", "0 1px 3px rgba(0,0,0,.45)");
+
+    } else if (t === "paper-wash") {
+      setBg(cover, "saturate(.42) contrast(.74) brightness(1.16)");
+      veil.style.background = `linear-gradient(${paper}, ${paper})`;
+      veil.style.opacity = ".34";
+      ui.style.setProperty("--fg", "#211E18");
+      ui.style.setProperty("--halo", "0 1px 2px rgba(255,255,255,.5)");
+      ui.classList.add("on-light");
+
+    } else if (t === "quiet-crop") {
+      const tr = an ? quietCrop(an, imgAspect) : cover;
+      setBg(tr);
+      const clock = an ? sampleRegion(an, tr, imgAspect, 0.06, 0.11, 0.94, 0.30) : { luma: 200, detail: 10 };
+      const k = ink(clock.luma, clock.detail);
+      ui.style.setProperty("--fg", k.fg);
+      ui.style.setProperty("--halo", k.halo);
+      ui.classList.toggle("on-light", k.fg !== "#FFFFFF");
+
+    } else if (t === "adaptive-ink") {
+      setBg(cover);
+      if (an) {
+        // Every text run is measured where it actually lands, so each icon
+        // label gets ink for the brushwork directly beneath that label.
+        const pr = phone.getBoundingClientRect();
+        for (const el of ui.querySelectorAll(".statusbar, .clock, .lockdate, .app span, .grabber")) {
+          const r = el.getBoundingClientRect();
+          if (!r.width || !r.height) continue;
+          const patch = sampleRegion(an, cover, imgAspect,
+            (r.left - pr.left) / pr.width,  (r.top - pr.top) / pr.height,
+            (r.right - pr.left) / pr.width, (r.bottom - pr.top) / pr.height);
+          const k = ink(patch.luma, patch.detail);
+          el.style.color = k.fg;
+          el.style.textShadow = k.halo;
+          if (el.classList.contains("grabber")) { el.style.background = k.fg; el.style.textShadow = "none"; }
+          // Busy brushwork gets a heavier face; thin digits vanish into leaves.
+          if (el.classList.contains("clock") && patch.detail > 32) el.style.fontWeight = "400";
+        }
+        const whole = sampleRegion(an, cover, imgAspect, 0, 0, 1, 1);
+        ui.classList.toggle("on-light", whole.luma > 150);
+      }
+
+    } else if (t === "paper-mat") {
+      phone.style.background = paper;
+      wall.style.backgroundImage = `url('${s.src}')`;
+      wall.style.backgroundSize = "contain";
+      wall.style.backgroundPosition = "50% 100%";
+      wall.style.inset = "29% 8% 22% 8%";
+      wall.style.boxShadow = "0 1px 2px rgba(40,34,24,.22), 0 10px 24px rgba(40,34,24,.20)";
+      const pl = 0.2126 * s.paper[0] + 0.7152 * s.paper[1] + 0.0722 * s.paper[2];
+      const k = ink(pl, 0);
+      ui.style.setProperty("--fg", k.fg);
+      ui.style.setProperty("--halo", "none");
+      ui.classList.toggle("on-light", k.fg !== "#FFFFFF");
+      const cap = document.createElement("div");
+      cap.className = "mat-caption";
+      cap.style.color = k.fg; cap.style.opacity = ".55";
+      cap.textContent = `${s.variety || ""} · ${s.year || ""}`;
+      phone.appendChild(cap);
+
+    } else if (t === "botanical-plate") {
+      phone.style.background = "#15140F";
+      wall.style.backgroundImage = `url('${s.src}')`;
+      wall.style.backgroundSize = "cover";
+      wall.style.filter = "saturate(.3) brightness(.34) blur(7px)";
+      const card = document.createElement("div");
+      card.className = "plate-card";
+      card.style.setProperty("--card", paper);
+      const place = (s.geo || "").split(",").slice(0, 2).join(", ");
+      card.innerHTML = `
+        <div class="pc-img" style="background-image:url('${s.src}')"></div>
+        <div class="pc-rule"></div>
+        <div class="pc-cap">
+          <div class="pc-name">${s.variety || "Unnamed"}</div>
+          <div class="pc-sci">${s.sci || ""}</div>
+          <div class="pc-meta">${s.artist || "unknown"} · ${s.year || "n.d."}<br>${place || "—"}<br>Spec. ${s.specimen || "—"}</div>
+        </div>`;
+      card.style.setProperty("--card-top", state.screen === "home" ? "34px" : "64px");
+      card.style.setProperty("--card-bot", state.screen === "home" ? "66px" : "56px");
+      phone.appendChild(card);
+      ui.style.setProperty("--fg", "#EFE9D8");
+      ui.style.setProperty("--halo", "0 1px 3px rgba(0,0,0,.6)");
+      // The card owns the middle of the screen, so the lock furniture moves out of its way.
+      const st = ui.querySelector(".lockstack");
+      if (st) { st.style.padding = "4px 16px 0"; }
+      const ck = ui.querySelector(".clock");
+      if (ck) { ck.style.fontSize = "20px"; ck.style.fontWeight = "400"; }
+      const dt = ui.querySelector(".lockdate");
+      if (dt) { dt.style.fontSize = "7.5px"; }
+      ui.querySelector(".notifs")?.remove();
+      ui.querySelector(".appgrid")?.style.setProperty("display", "none");
+    }
+  }
+  if (state.diag) drawDiagnostics();
+}
+
+/* ---- diagnostics -------------------------------------------------------- */
+function heat(v) {
+  const x = Math.max(0, Math.min(1, v / 62));
+  const stops = [[47,111,78],[201,162,39],[178,58,46]];
+  const i = x < .5 ? 0 : 1, f = x < .5 ? x * 2 : (x - .5) * 2;
+  const a = stops[i], b = stops[i + 1];
+  return `rgb(${a.map((v0, j) => Math.round(v0 + (b[j] - v0) * f)).join(",")})`;
+}
+
+function drawDiagnostics() {
+  const s = SPECIMENS[state.spec];
+  const an = analysis.get(s.id);
+  const img = images.get(s.id);
+  const A = document.getElementById("diagA"), B = document.getElementById("diagB");
+  const a = A.getContext("2d"), b = B.getContext("2d");
+  a.clearRect(0, 0, A.width, A.height); b.clearRect(0, 0, B.width, B.height);
+  if (img) {
+    const sc = Math.min(A.width / img.width, A.height / img.height);
+    const w = img.width * sc, h = img.height * sc;
+    a.drawImage(img, (A.width - w) / 2, (A.height - h) / 2, w, h);
+  }
+  if (!an) return;
+  const cw = B.width / GRID_C, ch = B.height / GRID_R;
+  for (let r = 0; r < GRID_R; r++) {
+    for (let c = 0; c < GRID_C; c++) {
+      b.fillStyle = heat(an.cells[r * GRID_C + c].detail);
+      b.fillRect(c * cw, r * ch, cw + .5, ch + .5);
+    }
+  }
+  const tr = quietCrop(an, s.w / s.h);
+  const ph = 1 / PHONE_ASPECT, dh = ph * tr.z, dw = dh * (s.w / s.h);
+  const offY = tr.oy * (ph - dh);
+  const y0 = ((0.11 * ph - offY) / dh) * B.height, y1 = ((0.30 * ph - offY) / dh) * B.height;
+  b.strokeStyle = "#EAF3D8"; b.lineWidth = 2;
+  b.strokeRect(1, Math.max(1, y0), B.width - 2, Math.max(6, y1 - y0));
+  b.fillStyle = "rgba(234,243,216,.16)";
+  b.fillRect(1, Math.max(1, y0), B.width - 2, Math.max(6, y1 - y0));
+}
+
+/* ---- interaction -------------------------------------------------------- */
+function setSpec(i) { state.spec = (i + SPECIMENS.length) % SPECIMENS.length; render(); }
+
+document.getElementById("specimens").addEventListener("click", e => {
+  const b = e.target.closest(".spec"); if (b) setSpec(+b.dataset.i);
+});
+document.getElementById("screenSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.screen = b.dataset.screen;
+  document.querySelectorAll("#screenSeg button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  render();
+});
+document.getElementById("diagSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.diag = b.dataset.diag === "on";
+  document.querySelectorAll("#diagSeg button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  document.getElementById("diag").hidden = !state.diag;
+  if (state.diag) drawDiagnostics();
+});
+
+// The change policy, demonstrated: everything goes dark, the plate changes
+// while it is dark, and the new one is already there when the light returns.
+let cycling = false;
+document.getElementById("cycleBtn").addEventListener("click", () => {
+  if (cycling) return;
+  cycling = true;
+  const phones = [...document.querySelectorAll(".phone")];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  phones.forEach(p => p.classList.add("asleep"));
+  setTimeout(() => {
+    setSpec(state.spec + 1);
+    setTimeout(() => {
+      phones.forEach(p => p.classList.remove("asleep"));
+      cycling = false;
+    }, reduce ? 0 : 420);
+  }, reduce ? 0 : 380);
+});
+
+addEventListener("keydown", e => {
+  if (e.target.matches("input, textarea")) return;
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= SPECIMENS.length) setSpec(n - 1);
+  if (e.key === "ArrowRight") setSpec(state.spec + 1);
+  if (e.key === "ArrowLeft") setSpec(state.spec - 1);
+});
+
+/* ---- boot -------------------------------------------------------------- */
+buildSpecimens();
+buildPlates();
+render();
+
+// Decode and measure every plate, then re-render so the two analysis-driven
+// treatments switch from their fallback framing to the real thing.
+let pending = SPECIMENS.length;
+for (const s of SPECIMENS) {
+  const img = new Image();
+  img.onload = () => {
+    images.set(s.id, img);
+    analysis.set(s.id, analyse(img));
+    if (--pending === 0) render();
+  };
+  img.onerror = () => { if (--pending === 0) render(); };
+  img.src = s.src;
+}
+
+setInterval(() => {
+  const { t } = clockNow();
+  document.querySelectorAll(".clock").forEach(n => { n.textContent = t; });
+  document.querySelectorAll(".statusbar span:first-child").forEach(n => { n.textContent = t; });
+}, 20000);
+</script>

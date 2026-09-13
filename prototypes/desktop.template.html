@@ -1,0 +1,382 @@
+<title>Pomological Desktop</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@300;400;500;600&display=swap">
+<style>
+/* ---------------------------------------------------------------------------
+   Palette taken from the scans themselves: the cream rag sheet, the iron-gall
+   annotations, the sap green of the foliage, and the near-black copy-stand
+   backdrop the plates were photographed on (which the pipeline crops away).
+   Light theme = the mat board. Dark theme = the copy stand.
+   --------------------------------------------------------------------------- */
+:root {
+  --ground:      #DFDACD;
+  --ground-2:    #D2CCBC;
+  --surface:     #F7F4EC;
+  --surface-2:   #EBE6DA;
+  --ink:         #201E1A;
+  --ink-2:       #5C5648;
+  --ink-3:       #8A8373;
+  --accent:      #4C6138;
+  --accent-ink:  #F7F4EC;
+  --accent-soft: rgba(76, 97, 56, .13);
+  --rule:        rgba(32, 30, 26, .16);
+  --rule-soft:   rgba(32, 30, 26, .08);
+  --shadow:      0 1px 2px rgba(32,30,26,.10), 0 10px 26px rgba(32,30,26,.14);
+  --stand:       #1A1A1E;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #131216;
+    --ground-2:    #0D0C10;
+    --surface:     #1D1C21;
+    --surface-2:   #26242B;
+    --ink:         #EDE8DC;
+    --ink-2:       #A9A18F;
+    --ink-3:       #746D5D;
+    --accent:      #9DB275;
+    --accent-ink:  #16160F;
+    --accent-soft: rgba(157, 178, 117, .15);
+    --rule:        rgba(237, 232, 220, .16);
+    --rule-soft:   rgba(237, 232, 220, .07);
+    --shadow:      0 1px 2px rgba(0,0,0,.5), 0 14px 34px rgba(0,0,0,.5);
+    --stand:       #0A0A0C;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:      #131216;
+  --ground-2:    #0D0C10;
+  --surface:     #1D1C21;
+  --surface-2:   #26242B;
+  --ink:         #EDE8DC;
+  --ink-2:       #A9A18F;
+  --ink-3:       #746D5D;
+  --accent:      #9DB275;
+  --accent-ink:  #16160F;
+  --accent-soft: rgba(157, 178, 117, .15);
+  --rule:        rgba(237, 232, 220, .16);
+  --rule-soft:   rgba(237, 232, 220, .07);
+  --shadow:      0 1px 2px rgba(0,0,0,.5), 0 14px 34px rgba(0,0,0,.5);
+  --stand:       #0A0A0C;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Public Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 72px; }
+
+/* --- masthead ------------------------------------------------------------ */
+.masthead { padding: 56px 0 28px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--ink-3); margin: 0 0 18px;
+}
+h1 {
+  font-family: Fraunces, Georgia, "Times New Roman", serif;
+  font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 120;
+  font-weight: 600;
+  font-size: clamp(34px, 5.2vw, 56px);
+  line-height: 1.02; letter-spacing: -.018em;
+  margin: 0 0 20px; text-wrap: balance; max-width: 17ch;
+}
+.deck { font-size: 17px; line-height: 1.6; color: var(--ink-2); max-width: 64ch; margin: 0 0 6px; }
+.deck strong { color: var(--ink); font-weight: 500; }
+.deck + .deck { margin-top: 14px; }
+
+/* --- control rail -------------------------------------------------------- */
+.rail {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  margin: 34px 0 0;
+}
+.rail-inner {
+  max-width: 1420px; margin: 0 auto; padding: 12px 24px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px;
+}
+.ctl { display: flex; align-items: center; gap: 10px; }
+.ctl-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-3); white-space: nowrap;
+}
+.seg { display: flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.seg button {
+  font: inherit; font-size: 12px; padding: 5px 12px; cursor: pointer;
+  background: transparent; color: var(--ink-2); border: 0;
+  border-right: 1px solid var(--rule-soft);
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.wrap { max-width: 1420px; margin: 0 auto; padding: 0 24px 80px; }
+.masthead { padding: 56px 0 10px; }
+
+/* --- the screen ---------------------------------------------------------- */
+.plate { margin: 54px 0 0; }
+.plate-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin: 0 0 4px; }
+.plate-head h3 {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink); margin: 0;
+}
+.plate-head .n {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3);
+}
+.bet { font-size: 15px; color: var(--ink-2); margin: 6px 0 0; max-width: 76ch; }
+.bet b { color: var(--ink); font-weight: 600; }
+.cost { font-size: 13.5px; color: var(--ink-3); margin: 5px 0 16px; max-width: 76ch; }
+.cost::before { content: "Cost — "; font-weight: 600; color: var(--ink-2); }
+
+/* The monitor: an aspect-locked box so every treatment is judged at the same
+   size the 3440x1440 panel actually presents it. */
+.screen {
+  position: relative; aspect-ratio: 3440 / 1440; width: 100%;
+  background: var(--stand) center/cover no-repeat;
+  border-radius: 3px; overflow: hidden; box-shadow: var(--shadow);
+}
+.screen img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* XFCE chrome, to scale: a 26px top panel and a 48px dock on a 1440px screen. */
+.chrome { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .18s; }
+.screen[data-chrome="on"] .chrome { opacity: 1; }
+.topbar {
+  position: absolute; top: 0; left: 0; right: 0; height: calc(100% * 26 / 1440);
+  background: rgba(24,23,27,.86); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 .7%;
+  font-family: "IBM Plex Mono", monospace; font-size: clamp(5px, .62vw, 9px);
+  color: rgba(236,232,222,.8);
+}
+.dock {
+  position: absolute; bottom: 1%; left: 50%; transform: translateX(-50%);
+  height: calc(100% * 48 / 1440); display: flex; gap: .5%; align-items: center;
+  padding: 0 .6%; border-radius: 4px; background: rgba(24,23,27,.72);
+}
+.dock i { display: block; aspect-ratio: 1; height: 64%; border-radius: 3px; background: rgba(236,232,222,.34); }
+.icons { position: absolute; top: 3%; left: 1%; display: grid; gap: 6%; }
+.icons span { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.icons i { width: clamp(12px, 1.5vw, 22px); aspect-ratio: 1; border-radius: 2px; background: rgba(236,232,222,.5); }
+.icons em {
+  font-style: normal; font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(4px, .5vw, 7px); color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9);
+}
+
+.used {
+  display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0 0;
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3);
+}
+.used b { color: var(--ink-2); font-weight: 500; }
+.apply {
+  margin: 12px 0 0; font-family: "IBM Plex Mono", monospace; font-size: 12px;
+  color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--rule-soft);
+  border-radius: 3px; padding: 8px 11px; overflow-x: auto; white-space: pre;
+}
+
+/* --- sections ------------------------------------------------------------ */
+.section { margin: 84px 0 0; padding: 34px 0 0; border-top: 1px solid var(--rule); }
+.section h2 {
+  font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 27px;
+  margin: 0 0 12px; letter-spacing: -.01em;
+}
+.grid3 { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin: 20px 0 0; }
+.card { background: var(--surface); border: 1px solid var(--rule-soft); border-radius: 4px; padding: 16px 18px; }
+.card h3 { font-size: 14.5px; margin: 6px 0 7px; }
+.card p { font-size: 13.5px; color: var(--ink-2); margin: 0; }
+.card code { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--ink); }
+.when {
+  font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent); font-weight: 500;
+}
+table { border-collapse: collapse; width: 100%; margin: 18px 0 0; font-size: 13.5px; }
+th, td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+th { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .1em;
+     text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+td code { font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+footer { margin: 74px 0 0; padding: 22px 0 0; border-top: 1px solid var(--rule);
+         font-size: 12px; color: var(--ink-3); max-width: 78ch; }
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <p class="eyebrow">USDA Pomological Watercolors · desktop</p>
+    <h1>Three and a half plates wide</h1>
+    <p class="deck">The phone problem was that the screen is <em>narrower</em> than the paintings —
+      0.46 against 0.65 — so filling it crops the width. The monitor is the opposite problem, and
+      a much bigger one. At <strong>3440 × 1440</strong> the screen is 2.39:1: three and a half
+      plates wide. Filling it with one painting would throw away about 85% of it.</p>
+    <p class="deck">So none of these fill the screen with one plate. Each is a different answer to
+      the question the ultrawide actually asks — <strong>what goes in all that width</strong> —
+      and they are ordered by how far they drift from "a painting on a wall".</p>
+  </div>
+</div>
+
+<div class="rail">
+  <div class="rail-inner">
+    <div class="ctl">
+      <span class="ctl-label">Desktop chrome</span>
+      <div class="seg" id="chromeSeg">
+        <button type="button" data-chrome="off" aria-pressed="true">Bare</button>
+        <button type="button" data-chrome="on" aria-pressed="false">Panel, dock &amp; icons</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span class="ctl-label">Specimen</span>
+      <div class="seg" id="variantSeg"></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="plates"></div>
+
+  <section class="section">
+    <h2>Changing it without you noticing</h2>
+    <p class="bet">The phone prototype settled this already: a wallpaper that swaps while you are
+      looking at the screen is a distraction, and the fix is not a slower timer but a
+      <b>dark boundary</b>. The desktop has the same boundary and announces it on D-Bus.</p>
+    <div class="grid3">
+      <div class="card">
+        <span class="when">On screen dark</span>
+        <h3>Swap behind the lock, never on a tick</h3>
+        <p>xfce4-screensaver broadcasts <code>ActiveChanged</code> on
+          <code>org.xfce.ScreenSaver</code>. The watcher composes the next plate when that goes
+          true, so unlocking reveals a picture that was already there.</p>
+      </div>
+      <div class="card">
+        <span class="when">≥ 1 hour since last</span>
+        <h3>One painting per hour, not per coffee</h3>
+        <p>Locking the screen six times before lunch should not burn six paintings — you would
+          never actually see any of them. The gate is time since the last change, not events.</p>
+      </div>
+      <div class="card">
+        <span class="when">Order</span>
+        <h3>Shuffle a ring, don't roll dice</h3>
+        <p>Selection walks one shuffled order of the pool and remembers its place, so nothing
+          repeats until everything has been seen. Preparing more scans shuffles them into the
+          part not yet shown rather than restarting.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Three surfaces, three mechanisms</h2>
+    <table>
+      <tr><th>Surface</th><th>How it is set</th><th>Status</th></tr>
+      <tr><td><b>Desktop</b></td>
+          <td><code>xfconf</code> backdrop keys, one per connected monitor. Each change lands on a
+            new filename, because xfdesktop only reloads when the path changes.</td>
+          <td>Live</td></tr>
+      <tr><td><b>Lock</b></td>
+          <td>xfce4-screensaver has no background setting, but its stock <code>slideshow</code>
+            saver takes a folder. The rotation keeps that folder stocked and the unlock dialog
+            draws over it.</td>
+          <td>Live</td></tr>
+      <tr><td><b>Login</b></td>
+          <td>SDDM runs as its own user and cannot read <code>$HOME</code> (mode 0700), so the
+            image goes to <code>/var/lib/pomological</code> and a breeze-derived theme reads it
+            from there.</td>
+          <td>Built, needs a switch</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    Plates from the U.S. Department of Agriculture Pomological Watercolor Collection, Rare and
+    Special Collections, National Agricultural Library, Beltsville, MD 20705. Public domain.
+    Scans trimmed from their copy-stand backdrop, composed and analysed locally; no image leaves
+    the machine.
+  </footer>
+</div>
+
+<script>
+const SHOTS = /*__DATA__*/;
+
+const TREATMENTS = [
+  { id: "mat", label: "mat",
+    bet: "Don't crop a public-domain painting at all. Float the whole sheet on a mat sampled from its own paper and let the rest of the width be wall.",
+    cost: "Most of a very wide screen is deliberately empty. If you wanted the monitor filled with fruit, this is the opposite of that." },
+  { id: "ledger", label: "ledger",
+    bet: "Run the sheet off the right edge and make the ground its own paper tone, so the whole screen reads as one sheet that happens to be painted at one end. The catalogue entry is set on the left, at a size you can actually read.",
+    cost: "The painting is cropped after all — you see about four fifths of it — and the left two thirds carry nothing but type." },
+  { id: "board", label: "board",
+    bet: "Four specimens in a row, heights nudged by hand, each captioned. The only treatment that uses 2.39:1 because it is 2.39:1 rather than in spite of it.",
+    cost: "Four plates at once is four times the visual noise, and no single painting gets to be the thing you look at." },
+  { id: "diptych", label: "diptych",
+    bet: "Two varieties of the same fruit, facing across a centre rule. The collection was made for comparison — this is the only treatment that actually does any.",
+    cost: "Needs two plates of one fruit in the pool, so the pairing gets thinner as the rotation narrows. Reads as a museum label." },
+  { id: "cabinet", label: "cabinet",
+    bet: "Fourteen plates on the copy-stand black, as a drawer pulled out of the cabinet. Texture and colour at a glance, no single subject.",
+    cost: "At thumbnail size the paintings stop being paintings. And it is the one dark treatment, so it fights every light window you open on top of it." },
+  { id: "bleed", label: "bleed",
+    bet: "Edge to edge after all — but on a detail, not the sheet. The busiest band of the plate is where the fruit is, so crop to that and let the paper grain carry the rest.",
+    cost: "Throws the sheet, the handwriting and the artist's signature away entirely. Also the only one where a caption has to survive whatever is under it." },
+];
+
+let variant = 0;
+const maxVariants = Math.max(...TREATMENTS.map(t => (SHOTS[t.id] || []).length));
+
+function render() {
+  document.getElementById("plates").innerHTML = TREATMENTS.map((t, i) => {
+    const shots = SHOTS[t.id] || [];
+    const shot = shots[Math.min(variant, shots.length - 1)];
+    if (!shot) return "";
+    const used = shot.plates.map(p =>
+      `<span><b>${p.name}</b> ${p.artist || ""} ${p.year || ""}</span>`).join("");
+    return `
+      <section class="plate">
+        <div class="plate-head">
+          <h3>${String(i + 1).padStart(2, "0")} · ${t.label}</h3>
+          <span class="n">${shot.plates.length} plate${shot.plates.length > 1 ? "s" : ""}</span>
+        </div>
+        <p class="bet">${t.bet}</p>
+        <p class="cost">${t.cost}</p>
+        <div class="screen" data-chrome="off">
+          <img src="${shot.src}" alt="${t.label} treatment at 3440 by 1440">
+          <div class="chrome">
+            <div class="topbar"><span>Applications</span><span>Sun 13 Sep  09:41</span></div>
+            <div class="icons">
+              <span><i></i><em>Home</em></span>
+              <span><i></i><em>nixos</em></span>
+            </div>
+            <div class="dock"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+        <div class="used">${used}</div>
+        <div class="apply">scripts/with_pillow.sh python3 scripts/set_wallpaper.py --treatment ${t.id}</div>
+      </section>`;
+  }).join("");
+  setChrome(document.querySelector('#chromeSeg button[aria-pressed="true"]').dataset.chrome);
+}
+
+function setChrome(state) {
+  document.querySelectorAll(".screen").forEach(s => s.dataset.chrome = state);
+}
+
+document.getElementById("chromeSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll("#chromeSeg button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  setChrome(b.dataset.chrome);
+});
+
+const vs = document.getElementById("variantSeg");
+vs.innerHTML = Array.from({ length: maxVariants }, (_, i) =>
+  `<button type="button" data-v="${i}" aria-pressed="${i === 0}">Roll ${i + 1}</button>`).join("");
+vs.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  variant = Number(b.dataset.v);
+  vs.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  render();
+});
+
+render();
+</script>
